@@ -131,8 +131,7 @@
       }
 
       .action-icon[disabled],
-      .sub-session[wide]:hover .action-icon[disabled],
-      .sub-session[wide] .action-icon.remove[disabled] {
+      .sub-session[wide]:hover .action-icon[disabled] {
         opacity: 0.2;
         cursor: default;
       }
@@ -165,10 +164,6 @@
       .sub-session[wide] .action-icon {
         opacity: 0;
         transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      .sub-session[wide] .action-icon.remove {
-        opacity: 1;
       }
 
       .tags {
@@ -247,12 +242,20 @@
                           </div>
                         </template>
                         <iron-icon
-                          class$="action-icon [[_getMyScheduleIcon(subSession.id, app.user.sessions)]]"
+                          class="action-icon"
                           icon="[[_getMyScheduleIcon(subSession.id, app.user.sessions)]]"
                           on-tap="toggleMyScheduleSession"
                           session-id$="[[subSession.id]]"
                           disabled$="[[!online]]"
                         ></iron-icon>
+                        <template is="dom-if" if="[[!app.user]]">
+                          <iron-icon
+                            class="action-icon add-icon-outline"
+                            icon="add-circle-outline"
+                            on-tap="toggleMyScheduleSession"
+                            disabled$="[[!online]]"
+                          ></iron-icon>
+                        </template>
                       </div>
 
                       <template is="dom-if" if="[[subSession.speakers]]">

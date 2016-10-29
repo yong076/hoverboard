@@ -3,6 +3,9 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -105,6 +108,38 @@
         display: inline-block;
         border-radius: 50%;
       }
+
+      .dropdown-menu {
+        width: 125px;
+      }
+
+      paper-dropdown-menu {
+        margin-left: 10px;
+        --paper-input-container-color: initial;
+        --paper-dropdown-menu-icon: {
+          color: inherit;
+        };
+        --paper-input-container-underline-focus: {
+          display: none;
+        };
+
+        --paper-input-container-underline: {
+          display: none;
+        };
+      }
+
+      paper-listbox {
+        --paper-listbox-background-color: #fff;
+        --paper-listbox-color: #000;
+      }
+
+      a {
+        color: #000;
+      }
+
+      paper-menu-button {
+        padding-left: 0;
+      }
     </style>
 
     <nav
@@ -112,6 +147,8 @@
       phoneSize$="[[app.isPhoneSize]]"
       layout horizontal center justified relative
     >
+
+    <template is="dom-if" if="[[!app.isPhoneSize]]">
       <paper-tabs
         class="schedule-tabs"
         selected="[[selectedDay]]"
@@ -135,7 +172,41 @@
           </paper-tab>
         </template>
       </paper-tabs>
+    </template>
 
+      <template is="dom-if" if="[[_showDaySelector(app.isPhoneSize, selectedDay)]]">
+        <paper-dropdown-menu horizontal-align="left" class="dropdown-menu" no-label-float noink>
+          <paper-listbox class="dropdown-content"
+                         selected="[[selectedDay]]"
+                         attr-for-selected="day">
+
+            <template is="dom-repeat" items="[[schedule]]" as="day">
+              <paper-item label$="[[day.dateReadable]]" day$="day[[_addToValue(index, 1)]]" link>
+                <a href$="/schedule/day[[_addToValue(index, 1)]]"
+                   layout center>[[day.dateReadable]]</a>
+              </paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </template>
+
+      <template is="dom-if" if="[[_showMyScheduleArrow(app.isPhoneSize, selectedDay)]]">
+        <div class="myscheduleback" layout horizontal center>
+          <paper-icon-button icon="arrow-back"
+                             aria-label="Close My Schedule"
+                             on-tap="_goBack"></paper-icon-button>
+          <span>[[localize('my-schedule')]]</span>
+        </div>
+      </template>
+
+    <div layout horizontal center>
+      <div class="meta-myschedue-button"
+           hidden$="[[!_displayPersonIcon(app.isPhoneSize, app.user)]]"
+           disabled$="[[_isMySchedulePage(selectedDay)]]">
+        <a href="/schedule/myschedule">
+          <paper-icon-button icon="person" aria-label="[[localize('my-schedule')]]"></paper-icon-button>
+        </a>
+      </div>
       <paper-menu-button
         id="filtersMenuToggle"
         horizontal-align="right"
@@ -166,6 +237,7 @@
           <paper-item on-tap="clearFilters">[[localize('clear-all')]]</paper-item>
         </paper-menu>
       </paper-menu-button>
+      </div>
     </nav>
 
     <div class="info-banner" layout horizontal justified>
@@ -277,6 +349,28 @@
 
         _refreshFiltersLabel: function () {
           this._filtersLabel = this.filters.join(', ');
+        },
+
+        _showDaySelector: function(isMobile, selectedSubpage) {
+          return isMobile && !this._isMySchedulePage(selectedSubpage);
+        },
+
+        _showMyScheduleArrow:function(isMobile, selectedSubpage) {
+          return isMobile && this._isMySchedulePage(selectedSubpage);
+        },
+
+        _isMySchedulePage: function(selectedSubpage) {
+          return selectedSubpage === 'myschedule';
+        },
+
+        _displayPersonIcon(isMobile, user) {
+          return isMobile && user;
+        },
+
+        _goBack: function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          window.history.go(-1);
         }
 
       });

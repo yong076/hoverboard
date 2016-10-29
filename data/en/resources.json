@@ -85,5 +85,7 @@
   "sign-out": "Sign out",
   "my-schedule": "My Schedule",
   "browse-more": "Browse more events",
-  "you-should-sign-in": "Sign in to save sessions"
+  "you-should-sign-in": "Sign in to save sessions",
+  "removed-from-schedule": "Removed from My Schedule",
+  "added-to-schedule": "Added to My Schedule"
 }
